@@ -2,13 +2,16 @@ import { useSortable } from "@dnd-kit/sortable";
 import { Column, Id } from "../Types";
 import RemoveIcon from "../icons/RemoveIcon";
 import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
 interface Props {
   column: Column;
   deleteColumn: (id: Id) => void;
+  updateColumn: (id: Id, title: string) => void;
 }
 const ColumnContainer = (props: Props) => {
-  const { column, deleteColumn } = props;
+  const { column, deleteColumn,updateColumn} = props;
+  const [editMode, setEditMode] = useState(false);
   const {
     setNodeRef,
     listeners,
@@ -22,6 +25,7 @@ const ColumnContainer = (props: Props) => {
       type: "Column",
       column,
     },
+    disabled: editMode
   });
   const style = {
     transition,
@@ -46,13 +50,29 @@ const ColumnContainer = (props: Props) => {
       <div
         {...attributes}
         {...listeners}
+        onClick={() => setEditMode(true)}
         className="bg-gray-900 h-[50px] cursor-grab rounded-md rounded-b-none border-4 border-columnbg p-3 font-bold flex justify-between items-center "
       >
         <div className="flex gap-2">
           <div className="text-yellow-300 rounded-lg bg-gray-800 py-1 px-2 flex  justify-center items-center">
             0
           </div>
-          {column.title}
+          {!editMode && <div> {column.title}</div>}
+          {editMode && (
+            <input
+              autoFocus
+              value={column.title}
+              onChange={(e) => {
+                updateColumn(column.id, e.target.value);
+              }}
+              onBlur={() => setEditMode(false)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                setEditMode(false);
+              }}
+              className=" bg-slate-700 border focus:border-yellow-300 rounded-md outline-none px-1"
+            />
+          )}
         </div>
 
         <button
