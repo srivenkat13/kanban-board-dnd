@@ -12,9 +12,11 @@ interface Props {
   updateColumn: (id: Id, title: string) => void;
   createTask: (columnId: Id) => void;
   tasks: Task[];
+  deleteTask: (id: Id) => void;
 }
 const ColumnContainer = (props: Props) => {
-  const { column, deleteColumn, updateColumn, createTask, tasks } = props;
+  const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask } =
+    props;
   const [editMode, setEditMode] = useState(false);
   const {
     setNodeRef,
@@ -59,7 +61,7 @@ const ColumnContainer = (props: Props) => {
       >
         <div className="flex gap-2">
           <div className="text-yellow-300 rounded-lg bg-gray-800 py-1 px-2 flex  justify-center items-center">
-            0
+            {tasks.length}
           </div>
           {!editMode && <div> {column.title}</div>}
           {editMode && (
@@ -88,7 +90,7 @@ const ColumnContainer = (props: Props) => {
       </div>
       <div className="flex flex-grow flex-col gap-4   p-2 overflow-x-hidden overflow-y-auto">
         {tasks?.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} deleteTask={deleteTask} />
         ))}
       </div>
       <button
