@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { Column, Id, Task } from "../Types";
 import RemoveIcon from "../icons/RemoveIcon";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
@@ -18,6 +18,7 @@ const ColumnContainer = (props: Props) => {
   const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask } =
     props;
   const [editMode, setEditMode] = useState(false);
+  const [isScaled, setIsScaled] = useState(false);
   const {
     setNodeRef,
     listeners,
@@ -37,6 +38,18 @@ const ColumnContainer = (props: Props) => {
     transition,
     transform: CSS.Transform.toString(transform),
   };
+  useEffect(() => {
+    setIsScaled(true);
+    const timeout = setTimeout(() => {
+      setIsScaled(false);
+    }, 500);
+    return () => clearTimeout(timeout)
+  }, [tasks.length]);
+  const scaleStyle = {
+    transform: isScaled ? 'scale(1.2)' : 'scale(1)',
+    color: isScaled ? 'red' : '#fde047',
+    transition: 'transform 0.5s , color 0.5s',
+  };
   if (isDragging) {
     return (
       <div
@@ -46,6 +59,7 @@ const ColumnContainer = (props: Props) => {
       ></div>
     );
   }
+
 
   return (
     <div
@@ -60,7 +74,7 @@ const ColumnContainer = (props: Props) => {
         className="bg-gray-900 h-[50px] cursor-grab rounded-md rounded-b-none border-4 border-columnbg p-3 font-bold flex justify-between items-center "
       >
         <div className="flex gap-2">
-          <div className="text-yellow-300 rounded-lg bg-gray-800 py-1 px-2 flex  justify-center items-center">
+          <div className="text-yellow-300 rounded-lg bg-gray-800 py-1 px-2 flex  justify-center items-center" style={scaleStyle}>
             {tasks.length}
           </div>
           {!editMode && <div> {column.title}</div>}
