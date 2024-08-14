@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
-import { Column, Id } from "../Types";
+import { Column, Id, Task } from "../Types";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -17,6 +17,7 @@ import { createPortal } from "react-dom";
 const KanbanBoard = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const columnsId = columns.map((col) => col.id);
+  const [tasks, SetTasks] = useState<Task[]>([]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
   const sensors = useSensors(
@@ -66,7 +67,15 @@ const KanbanBoard = () => {
       return arrayMove(columns, activeColIndex, overColIndex);
     });
   }
+  const createTask = (columnId: Id) => {
+    const tasksToAdd: Task = {
+      id: generateID(),
+      columnId,
+      content: `Task ${tasks.length + 1}`,
+    };
 
+    SetTasks([...tasks, tasksToAdd]);
+  };
   return (
     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden md:px-[40px] px-[10px] py-[10px]">
       <DndContext
@@ -83,6 +92,8 @@ const KanbanBoard = () => {
                   deleteColumn={deleteColumn}
                   key={col.id}
                   updateColumn={updateColumn}
+                  createTask={createTask}
+                  tasks={tasks.filter((task) => task.columnId === col.id)}
                 />
               ))}
             </SortableContext>
@@ -102,6 +113,8 @@ const KanbanBoard = () => {
                 column={activeColumn}
                 deleteColumn={deleteColumn}
                 updateColumn={updateColumn}
+                createTask={createTask}
+                tasks={tasks}
               />
             )}
           </DragOverlay>,
