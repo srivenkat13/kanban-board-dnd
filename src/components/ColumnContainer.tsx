@@ -47,7 +47,7 @@ const ColumnContainer = (props: Props) => {
   }, [tasks.length]);
   const scaleStyle = {
     transform: isScaled ? 'scale(1.2)' : 'scale(1)',
-    color: isScaled ? 'red' : '#fde047',
+    color: isScaled ? '#dc2626 ' : '#fde047',
     transition: 'transform 0.5s , color 0.5s',
   };
   if (isDragging) {
