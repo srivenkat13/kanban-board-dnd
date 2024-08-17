@@ -31,6 +31,7 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
+    touchAction: "none",
   };
   function toggleEditMode() {
     setEditMode((prev) => !prev);
@@ -38,9 +39,11 @@ const TaskCard = ({ task, deleteTask, updateTask }: Props) => {
   }
   if (isDragging) {
     return (
-      <div ref={setNodeRef} style={style}  className="bg-columnbg p-2.5 h-[100px] min-h-[70px] rounded-xl text-left flex items-center border-2 border-yellow-300 cursor-grab relative task opacity-20"/>
-       
-    
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="bg-columnbg p-2.5 h-[100px] min-h-[70px] rounded-xl text-left flex items-center border-2 border-yellow-300 cursor-grab relative task opacity-20"
+      />
     );
   }
   if (editMode) {

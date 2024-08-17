@@ -1,4 +1,4 @@
-import { SortableContext, useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Column, Id, Task } from "../Types";
 import RemoveIcon from "../icons/RemoveIcon";
 import { CSS } from "@dnd-kit/utilities";
@@ -16,8 +16,15 @@ interface Props {
   updateTask: (id: Id, content: string) => void;
 }
 const ColumnContainer = (props: Props) => {
-  const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask,updateTask } =
-    props;
+  const {
+    column,
+    deleteColumn,
+    updateColumn,
+    createTask,
+    tasks,
+    deleteTask,
+    updateTask,
+  } = props;
   const [editMode, setEditMode] = useState(false);
   const [isScaled, setIsScaled] = useState(false);
   const {
@@ -38,6 +45,7 @@ const ColumnContainer = (props: Props) => {
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
+    touchAction: "none",
   };
   useEffect(() => {
     setIsScaled(true);
@@ -61,7 +69,7 @@ const ColumnContainer = (props: Props) => {
     );
   }
 
-  const taskIds = tasks.map(task => task.id)
+  const taskIds = tasks.map((task) => task.id);
   return (
     <div
       ref={setNodeRef}
@@ -107,16 +115,15 @@ const ColumnContainer = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-grow flex-col gap-4   p-2 overflow-x-hidden overflow-y-auto">
-        <SortableContext  items={taskIds}>
-
-        {tasks?.map((task) => (
-          <TaskCard
-          key={task.id}
-          task={task}
-          deleteTask={deleteTask}
-          updateTask={updateTask}
-          />
-        ))}
+        <SortableContext items={taskIds}>
+          {tasks?.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+            />
+          ))}
         </SortableContext>
       </div>
       <button
