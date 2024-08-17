@@ -1,4 +1,4 @@
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { Column, Id, Task } from "../Types";
 import RemoveIcon from "../icons/RemoveIcon";
 import { CSS } from "@dnd-kit/utilities";
