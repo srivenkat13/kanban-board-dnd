@@ -1,4 +1,4 @@
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { Column, Id, Task } from "../Types";
 import RemoveIcon from "../icons/RemoveIcon";
 import { CSS } from "@dnd-kit/utilities";
@@ -61,6 +61,7 @@ const ColumnContainer = (props: Props) => {
     );
   }
 
+  const taskIds = tasks.map(task => task.id)
   return (
     <div
       ref={setNodeRef}
@@ -106,14 +107,17 @@ const ColumnContainer = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-grow flex-col gap-4   p-2 overflow-x-hidden overflow-y-auto">
+        <SortableContext  items={taskIds}>
+
         {tasks?.map((task) => (
           <TaskCard
-            key={task.id}
-            task={task}
-            deleteTask={deleteTask}
-            updateTask={updateTask}
+          key={task.id}
+          task={task}
+          deleteTask={deleteTask}
+          updateTask={updateTask}
           />
         ))}
+        </SortableContext>
       </div>
       <button
         className="flex gap-2 items-center  border-columnbg border-2 p-4 rounded-lg hover:text-yellow-300 active:bg-black "
