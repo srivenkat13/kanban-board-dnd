@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import { Column, Id, Task } from "../Types";
 import ColumnContainer from "./ColumnContainer";
@@ -15,14 +15,62 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
+import DeleteICon from "../icons/DeleteIcon";
 
 const KanbanBoard = () => {
-  const [columns, setColumns] = useState<Column[]>([]);
+  const initialState = [
+    {
+      id: generateID(),
+      title: `Work in progress⚠️ `,
+    },
+    {
+      id: generateID(),
+      title: `Completed✅`,
+    },
+    {
+      id: generateID(),
+      title: `To be Done📃`,
+    },
+  ];
+
+  const [columns, setColumns] = useState<Column[]>(() => {
+    const storedColumns = localStorage.getItem("kb-columns");
+    return storedColumns ? JSON.parse(storedColumns) : initialState;
+  });
   const columnsId = columns.map((col) => col.id);
-  const [tasks, SetTasks] = useState<Task[]>([]);
+  const [tasks, SetTasks] = useState<Task[]>(() => {
+    const storedTasks = localStorage.getItem("kb-tasks");
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const boardRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const boardElement = boardRef.current;
+    if (boardElement) {
+      const handleWheel = (event: WheelEvent) => {
+        if (window.innerWidth > 600) {
+          event.preventDefault();
+          boardElement.scrollLeft += event.deltaY;
+        }
+      };
+
+      boardElement.addEventListener("wheel", handleWheel);
+
+      return () => {
+        boardElement.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("kb-columns", JSON.stringify(columns));
+  }, [columns]);
+
+  useEffect(() => {
+    localStorage.setItem("kb-tasks", JSON.stringify(tasks));
+  }, [tasks]);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 3 } })
   );
@@ -130,8 +178,16 @@ const KanbanBoard = () => {
     });
     SetTasks(newTasks);
   }
+
+  function clearLocalStorage() {
+    localStorage.removeItem("kb-columns");
+    localStorage.removeItem("kb-tasks");
+  }
   return (
-    <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden md:px-[40px] px-[10px] py-[10px]">
+    <div
+      className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden md:px-[40px] px-[10px] py-[10px] scroll-smooth"
+      ref={boardRef}
+    >
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
@@ -155,13 +211,22 @@ const KanbanBoard = () => {
               ))}
             </SortableContext>
           </div>
-          <button
-            className="h-[60px] w-[200px] min-w-[200px] cursor-pointer rounded-lg bg-mainbg border-2 border-columnbg p-4 ring-yellow-400 hover:ring-1 flex gap-2 active:scale-95"
-            onClick={AddColumn}
-          >
-            <PlusIcon />
-            Add Column
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              className="h-[60px] w-[300px] min-w-[200px] cursor-pointer rounded-lg bg-mainbg border-2 border-columnbg p-4 ring-yellow-400 hover:ring-1 flex gap-2 active:scale-95"
+              onClick={AddColumn}
+            >
+              <PlusIcon />
+              Add Column
+            </button>
+            <button
+              className="h-[60px] w-[300px] min-w-[200px] cursor-pointer rounded-lg bg-mainbg border-2 border-columnbg p-4 ring-yellow-400 hover:ring-1 flex gap-2 active:scale-95 stroke-orange-600"
+              onClick={clearLocalStorage}
+            >
+              <DeleteICon />
+              Clear Storage
+            </button>
+          </div>
         </div>
         {createPortal(
           <DragOverlay>
