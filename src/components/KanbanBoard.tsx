@@ -74,11 +74,18 @@ const KanbanBoard = () => {
       content: `Task ${tasks.length + 1}`,
     };
 
-    SetTasks([...tasks, tasksToAdd]);
+    SetTasks([tasksToAdd,...tasks ]);
   };
   function deleteTask(taskId: Id) {
     const filteredTasks = tasks.filter((task) => task.id !== taskId);
     SetTasks(filteredTasks);
+  }
+  function updateTask(id: Id, content: string) {
+    const newTasks = tasks.map((task) => {
+      if (task.id !== id) return task;
+      return { ...task, content };
+    });
+    SetTasks(newTasks);
   }
   return (
     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden md:px-[40px] px-[10px] py-[10px]">
@@ -99,8 +106,9 @@ const KanbanBoard = () => {
                   createTask={createTask}
                   tasks={tasks.filter((task) => task.columnId === col.id)}
                   deleteTask={deleteTask}
-                />
-              ))}
+                  updateTask={updateTask}
+                  />
+                ))}
             </SortableContext>
           </div>
           <button
@@ -123,6 +131,7 @@ const KanbanBoard = () => {
                   (task) => task.columnId === activeColumn.id
                 )}
                 deleteTask={deleteTask}
+                updateTask={updateTask}
               />
             )}
           </DragOverlay>,
