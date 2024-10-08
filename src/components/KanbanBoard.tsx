@@ -87,6 +87,9 @@ const KanbanBoard = () => {
     return Math.floor(Math.random() * 10001);
   }
   function deleteColumn(id: Id): void {
+    const sure = confirm("Sure?");
+    if (!sure) return;
+
     const filteredColumns = columns.filter((col) => col.id !== id);
     setColumns(filteredColumns);
 
